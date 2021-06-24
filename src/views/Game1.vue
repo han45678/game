@@ -1,16 +1,16 @@
 <template>
   <div class="container">
     <div class="row" style="width: 540px;">
-      <div v-for="(item, index) in anser" :key="index" @click="checkIsSame(index)"
-        :class="{'active': item === 'pass'}" class="item">
+      <div 
+        v-for="(item, index) in anser" 
+        :key="index" 
+        @click="checkIsSame(index)" 
+        :class="{'active': item === 'pass' , 'flop' : flop}"
+        class="item">
         <h1>{{ item }}</h1>
       </div>
     </div>
-    <div class="row">
-      <div class="col-12">
-        <button class="btn btn-success" @click="shuffle">重新洗牌</button>
-      </div>
-    </div>
+    <button class="btn btn-success" @click="shuffle">重新洗牌</button>
   </div>
 </template>
 
@@ -20,16 +20,15 @@
     components: {},
     mounted() {
       this.shuffle();
-      // this.flop();
+      this.isFlop();
     },
     data: () => ({
       selected: [],
       selectedIndex: -1,
       anser: [],
-      active2: true
+      flop: false
     }),
     methods: {
-
       checkIsSame(index) {
         // 要是選擇到的號碼是-1就跳出不動作，以及同個牌也不動作
         if (this.anser[index] === 'pass' || this.selected[0] === index) {
@@ -56,6 +55,15 @@
           this.selected = [];
         }
       },
+      
+      //一開始會有一秒給玩家看牌的位置
+      isFlop(){
+        setTimeout(myFlop, 1000);
+        function myFlop() {
+            this.flop = false;
+        }
+      },
+      
       // 洗牌
       shuffle() {
         this.selected = [];
@@ -69,7 +77,8 @@
           this.anser[i] = this.anser[j];
           this.anser[j] = temp;
         }
-        // this.flop()
+        
+        // this.isFlop()
       },
     },
   };
@@ -117,11 +126,11 @@
     background-size: cover;
   }
 
-  .item.active {
+  .item.active,.item.flop {
     transform: rotateY(0);
   }
 
-  .item.active::after {
+  .item.active::after,.item.flop::after {
     display: none;
   }
 
@@ -139,7 +148,8 @@
   .bg-danger {
     cursor: auto;
   }
-  button{
-    margin-top: 100px;
+
+  button {
+    margin-top: 50px;
   }
 </style>
