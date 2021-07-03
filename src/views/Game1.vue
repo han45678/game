@@ -1,13 +1,13 @@
 <template>
   <div class="container">
     <div class="row" style="width: 540px;">
-      <div 
-        v-for="(item, index) in anser" 
-        :key="index" 
-        @click="checkIsSame(index)" 
-        :class="{'active': item === 'pass' , 'flop' : flop}"
+      <div
+        v-for="(item, index) in anser"
+        :key="index"
+        @click="checkIsSame(item, index)"
+        :class="{'flop' : item.open}"
         class="item">
-        <h1>{{ item }}</h1>
+        <h1>{{ item.val }}</h1>
       </div>
     </div>
     <button class="btn btn-success" @click="shuffle">重新洗牌</button>
@@ -20,56 +20,71 @@
     components: {},
     mounted() {
       this.shuffle();
-      this.isFlop();
     },
     data: () => ({
       selected: [],
-      selectedIndex: -1,
       anser: [],
-      flop: false
+      doneCount: 0,
     }),
     methods: {
-      checkIsSame(index) {
+      checkIsSame(item, index) {
+
         // 要是選擇到的號碼是-1就跳出不動作，以及同個牌也不動作
-        if (this.anser[index] === 'pass' || this.selected[0] === index) {
+        if (this.selected[0] === index || this.selected.length === 2) {
+          console.log('drop');
           return;
         }
+        item.open = true;
 
         // 將選擇的數字丟到選擇容器中
         this.selected.push(index);
 
-        // 紀錄點到的是哪張牌
-        this.selectedIndex = index;
-
         // 判斷是否選擇了兩個
         if (this.selected.length === 2) {
           // 判斷選擇的是否相同，相同的話就將該卡片上的欄位改為-1
-          if (this.anser[this.selected[0]] === this.anser[this.selected[1]]) {
-            this.anser[this.selected[0]] = 'pass';
-            this.anser[this.selected[1]] = 'pass';
-            console.log(this.anser);
-            // this.anser[index].classList.add("aaa");
-          }
+          setTimeout(() => {
+            if (this.anser[this.selected[0]].val !== this.anser[this.selected[1]].val) {
+              this.anser[this.selected[0]].open = false;
+              this.anser[this.selected[1]].open = false;
+            } else {
+              this.doneCount++;
+              console.log(this.doneCount);
+            }
 
-          // 選擇兩個後要清空選擇容器
-          this.selected = [];
+            if (this.doneCount === this.anser.length / 2) {
+              alert('恭喜~');
+            }
+
+            // 選擇兩個後要清空選擇容器
+            this.selected = [];
+          }, 1.5 * 1000);
+
         }
       },
-      
+
+
       //一開始會有一秒給玩家看牌的位置
-      isFlop(){
-        setTimeout(myFlop, 1000);
-        function myFlop() {
-            this.flop = false;
-        }
+      isFlop() {
+        setTimeout(() => {
+            this.anser.forEach((data, index) => {
+              this.anser[index].open = false;
+            });
+        }, 3 * 1000);
       },
-      
+
       // 洗牌
       shuffle() {
-        this.selected = [];
-        this.anser = [
+        let tmp = [
           1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6
         ];
+
+        this.anser = tmp.map((data) => ({
+          val: data,
+          open: true,
+        }));
+
+        this.doneCount = [];
+
         let i, j, temp;
         for (i = this.anser.length - 1; i > 0; i--) {
           j = Math.floor(Math.random() * (i + 1));
@@ -77,8 +92,10 @@
           this.anser[i] = this.anser[j];
           this.anser[j] = temp;
         }
-        
-        // this.isFlop()
+
+        console.log(this.anser.map(data => data.val));
+
+        this.isFlop();
       },
     },
   };
