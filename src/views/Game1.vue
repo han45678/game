@@ -1,16 +1,17 @@
 <template>
+
   <div class="container">
+    <h1 class="text-center">遊戲時間：{{time}}秒</h1>
+    <div class="color_block" :class="{'active' : color_block}">
+      <button class="btn btn-success" @click="begin()">遊戲開始</button>
+    </div>
     <div class="row" style="width: 540px;">
-      <div
-        v-for="(item, index) in anser"
-        :key="index"
-        @click="checkIsSame(item, index)"
-        :class="{'flop' : item.open}"
+      <div v-for="(item, index) in anser" :key="index" @click="checkIsSame(item, index)" :class="{'flop' : item.open}"
         class="item">
         <h1>{{ item.val }}</h1>
       </div>
     </div>
-    <button class="btn btn-success" @click="shuffle">重新洗牌</button>
+
   </div>
 </template>
 
@@ -20,11 +21,16 @@
     components: {},
     mounted() {
       this.shuffle();
+
     },
     data: () => ({
       selected: [],
       anser: [],
       doneCount: 0,
+      color_block: false,
+      timer: null,
+      time: 30,
+      memory: 3,
     }),
     methods: {
       checkIsSame(item, index) {
@@ -52,24 +58,25 @@
             }
 
             if (this.doneCount === this.anser.length / 2) {
-              alert('恭喜~');
+              this.color_block = true;
+              alert('過關~');
             }
 
             // 選擇兩個後要清空選擇容器
             this.selected = [];
-          }, 1.5 * 1000);
-
+            //翻牌後多久才能有下一個動作
+            //預防使用者連點
+          }, 0.5 * 1000);
         }
       },
 
-
-      //一開始會有一秒給玩家看牌的位置
+      //一開始會給玩家看牌的位置
       isFlop() {
         setTimeout(() => {
-            this.anser.forEach((data, index) => {
-              this.anser[index].open = false;
-            });
-        }, 3 * 1000);
+          this.anser.forEach((data, index) => {
+            this.anser[index].open = false;
+          });
+        }, this.memory * 1000);
       },
 
       // 洗牌
@@ -96,12 +103,71 @@
         console.log(this.anser.map(data => data.val));
 
         this.isFlop();
+
       },
+
+      //倒數計時器
+      countdown() {
+        this.time--;
+        if (this.time == 0) {
+          clearInterval(this.timer)
+          alert('時間到!')
+          if (this.doneCount === this.anser.length / 2) {
+            this.color_block = true;
+            alert('過關~');
+          }
+        }
+      },
+
+      //開始
+      begin() {
+        this.shuffle();
+        this.color_block = true;
+        this.isFlop();
+        this.timer = setInterval(this.countdown, 1000);
+      }
     },
   };
+
 </script>
 
 <style>
+  .container {
+    position: relative;
+  }
+
+  .color_block {
+    background-color: rgba(40, 167, 69, 1);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 999;
+  }
+
+  .color_block.active {
+    display: none;
+  }
+
+  .color_block button {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    border: 1px solid;
+    border-radius: 0;
+    width: 180px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .color_block button:hover {
+    background-color: #fff;
+    color: #28a745;
+  }
+
   #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -130,6 +196,7 @@
     transition: 0.3s;
     transform: rotateY(-180deg);
     box-shadow: 0px 0px 15px #ccc;
+    cursor: pointer;
   }
 
   .item::after {
@@ -143,11 +210,14 @@
     background-size: cover;
   }
 
-  .item.active,.item.flop {
+  .item.active,
+  .item.flop {
     transform: rotateY(0);
+    cursor: auto;
   }
 
-  .item.active::after,.item.flop::after {
+  .item.active::after,
+  .item.flop::after {
     display: none;
   }
 
@@ -169,4 +239,5 @@
   button {
     margin-top: 50px;
   }
+
 </style>

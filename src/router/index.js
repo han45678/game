@@ -25,11 +25,11 @@ const routes = [
     name: 'external',
     component: () => import(/* webpackChunkName: "about" */ '../views/external.vue')
   },
-  {
-    path: '/game2',
-    name: 'Game2',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Game2.vue')
-  }
+  // {
+  //   path: '/game2',
+  //   name: 'Game2',
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/Game2.vue')
+  // }
 ]
 
 const router = new VueRouter({
