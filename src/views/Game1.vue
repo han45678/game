@@ -6,12 +6,17 @@
       <button class="btn btn-success" @click="begin()">遊戲開始</button>
     </div>
     <div class="row" style="width: 540px;">
-      <div v-for="(item, index) in anser" :key="index" @click="checkIsSame(item, index)" :class="{'flop' : item.open}"
-        class="item">
+      <div v-for="(item, index) in anser" :key="index" @click="checkIsSame(item, index)"
+        :class="{'flop' : item.open,'active' : failure,'pass' : pass}" class="item">
         <h1>{{ item.val }}</h1>
       </div>
     </div>
-
+    <div id="pass" :class="{'active' : pass}">
+      <p>PASS</p>
+    </div>
+    <div id="failure" :class="{'active' : failure}">
+      <p>failure</p>
+    </div>
   </div>
 </template>
 
@@ -31,6 +36,8 @@
       timer: null,
       time: 30,
       memory: 3,
+      pass: false,
+      failure: false,
     }),
     methods: {
       checkIsSame(item, index) {
@@ -59,13 +66,13 @@
 
             if (this.doneCount === this.anser.length / 2) {
               this.color_block = true;
-              alert('過關~');
+              this.pass = true;//過關
+              this.time = "停止"
             }
 
             // 選擇兩個後要清空選擇容器
             this.selected = [];
-            //翻牌後多久才能有下一個動作
-            //預防使用者連點
+            //翻牌後多久才能有下一個動作 //預防使用者連點
           }, 0.5 * 1000);
         }
       },
@@ -111,11 +118,8 @@
         this.time--;
         if (this.time == 0) {
           clearInterval(this.timer)
-          alert('時間到!')
-          if (this.doneCount === this.anser.length / 2) {
-            this.color_block = true;
-            alert('過關~');
-          }
+          // alert('時間到!');
+          this.failure = true;
         }
       },
 
@@ -132,6 +136,10 @@
 </script>
 
 <style>
+  body {
+    overflow: hidden;
+  }
+
   .container {
     position: relative;
   }
@@ -209,13 +217,14 @@
     background-image: url("https://png.pngtree.com/png-clipart/20190904/original/pngtree-plaid-tile-png-image_4471399.jpg");
     background-size: cover;
   }
-
+  .item.pass,
   .item.active,
   .item.flop {
     transform: rotateY(0);
     cursor: auto;
   }
 
+  .item.pass::after,
   .item.active::after,
   .item.flop::after {
     display: none;
@@ -238,6 +247,75 @@
 
   button {
     margin-top: 50px;
+  }
+
+  #pass {
+    position: absolute;
+    z-index: 998;
+    width: 80%;
+    height: 30%;
+    border: 15px solid #f5c000;
+    transform: scale(2);
+    opacity: 0;
+    transition: 0.6s;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    /* box-shadow: 0px 0px 12px 0px #000; */
+  }
+
+  #pass.active {
+    pointer-events: auto;
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  #pass p {
+    font-size: 80px;
+    font-weight: bolder;
+    color: #f5c000;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+
+  #failure {
+    position: absolute;
+    z-index: 998;
+    width: 80%;
+    height: 30%;
+    border: 15px solid red;
+    transform: rotate(25deg) scale(2);
+    opacity: 0;
+    transition: 0.6s;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    /* box-shadow: 0px 0px 12px 0px #000; */
+  }
+
+  #failure.active {
+    pointer-events: auto;
+    transform: rotate(25deg) scale(1);
+    opacity: 1;
+  }
+
+  #failure p {
+    font-size: 80px;
+    font-weight: bolder;
+    color: red;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 
 </style>
