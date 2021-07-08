@@ -6,18 +6,24 @@
       <button class="btn btn-success" @click="begin()">遊戲開始</button>
     </div>
     <div class="row" style="width: 540px;">
-      <div v-for="(item, index) in anser" :key="index" @click="checkIsSame(item, index)"
-        :class="{'flop' : item.open,'active' : failure,'pass' : pass}" class="item">
+      <div 
+        v-for="(item, index) in anser" 
+        :key="index" 
+        @click="checkIsSame(item, index)"
+        :class="{'flop' : item.open , 'active' : failure , 'pass' : pass}" 
+        class="item">
         <h1>{{ item.val }}</h1>
       </div>
     </div>
+    <!-- <button @click="checkIsSame">再次挑戰</button> -->
     <div id="pass" :class="{'active' : pass}">
-      <p>PASS</p>
+      <p>挑戰成功</p>
     </div>
     <div id="failure" :class="{'active' : failure}">
-      <p>failure</p>
+      <p>挑戰失敗</p>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -26,7 +32,6 @@
     components: {},
     mounted() {
       this.shuffle();
-
     },
     data: () => ({
       selected: [],
@@ -132,7 +137,6 @@
       }
     },
   };
-
 </script>
 
 <style>
@@ -269,7 +273,7 @@
 
   #pass.active {
     pointer-events: auto;
-    transform: scale(1);
+    transform: scale(1) rotate(5deg);
     opacity: 1;
   }
 
@@ -281,6 +285,7 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    width: 100%;
   }
 
 
@@ -290,7 +295,7 @@
     width: 80%;
     height: 30%;
     border: 15px solid red;
-    transform: rotate(25deg) scale(2);
+    transform: scale(2);
     opacity: 0;
     transition: 0.6s;
     pointer-events: none;
@@ -316,6 +321,7 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    width: 100%;
   }
 
 </style>
